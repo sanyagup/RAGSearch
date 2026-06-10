@@ -1,0 +1,12 @@
+# Secrets — never commit your real key
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local vector index
+index.npz
+index.json
