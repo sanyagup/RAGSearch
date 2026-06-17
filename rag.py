@@ -39,9 +39,7 @@ def _client() -> OpenAI:
     return OpenAI()
 
 
-# --------------------------------------------------------------------------- #
 # Reading files (text, markdown, PDF)
-# --------------------------------------------------------------------------- #
 SUPPORTED = {".txt", ".md", ".pdf"}
 
 
@@ -53,9 +51,7 @@ def read_file(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="ignore")
 
 
-# --------------------------------------------------------------------------- #
 # Chunking
-# --------------------------------------------------------------------------- #
 def chunk_text(text: str, size: int = 800, overlap: int = 150) -> list[str]:
     """Split text into overlapping word windows so context isn't cut mid-thought."""
     words = text.split()
@@ -71,9 +67,7 @@ def chunk_text(text: str, size: int = 800, overlap: int = 150) -> list[str]:
     return chunks
 
 
-# --------------------------------------------------------------------------- #
 # Embeddings
-# --------------------------------------------------------------------------- #
 def embed(client: OpenAI, texts: list[str]) -> np.ndarray:
     """Return L2-normalized embeddings (so dot product == cosine similarity)."""
     vectors: list[list[float]] = []
@@ -87,9 +81,7 @@ def embed(client: OpenAI, texts: list[str]) -> np.ndarray:
     return arr / np.clip(norms, 1e-8, None)
 
 
-# --------------------------------------------------------------------------- #
 # Index persistence
-# --------------------------------------------------------------------------- #
 @dataclass
 class Index:
     vectors: np.ndarray          # shape (n_chunks, dim)
@@ -112,9 +104,7 @@ class Index:
         return cls(vectors, meta["chunks"], meta["sources"])
 
 
-# --------------------------------------------------------------------------- #
 # Ingest
-# --------------------------------------------------------------------------- #
 def ingest(folder: str) -> Index:
     """Read every .txt/.md file under `folder`, chunk, embed, and save the index."""
     client = _client()
@@ -145,9 +135,7 @@ def ingest(folder: str) -> Index:
     return index
 
 
-# --------------------------------------------------------------------------- #
 # Search + answer
-# --------------------------------------------------------------------------- #
 def search(index: Index, query_vec: np.ndarray, k: int = 4) -> list[tuple[float, int]]:
     """Return the top-k (score, chunk_index) by cosine similarity."""
     scores = index.vectors @ query_vec
